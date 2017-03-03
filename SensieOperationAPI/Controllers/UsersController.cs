@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using SensieOperationAPI;
+using SensieOperationAPI.Models;
 
 namespace SensieOperationAPI.Controllers
 {
@@ -18,9 +18,9 @@ namespace SensieOperationAPI.Controllers
         private OperationContext db = new OperationContext();
 
         // GET: api/Users
-        public IQueryable<User> GetUsers()
+        public IEnumerable<User> GetUsers()
         {
-            return db.Users;
+            return db.Users.ToList();
         }
 
         // GET: api/Users/5

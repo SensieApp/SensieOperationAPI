@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using SensieOperationAPI;
+using SensieOperationAPI.Models;
+using System;
 
 namespace SensieOperationAPI.Controllers
 {
@@ -18,22 +15,45 @@ namespace SensieOperationAPI.Controllers
         private OperationContext db = new OperationContext();
 
         // GET: api/ActivationCodes
-        public IQueryable<ActivationCode> GetActivationCodes()
-        {
-            return db.ActivationCodes;
-        }
+        //public IQueryable<ActivationCode> GetActivationCodes()
+        //{
+        //    return db.ActivationCodes;
+        //}
 
         // GET: api/ActivationCodes/5
         [ResponseType(typeof(ActivationCode))]
-        public async Task<IHttpActionResult> GetActivationCode(int id)
+        public async Task<IHttpActionResult> GetActivationCode(int acId, string email)
         {
-            ActivationCode activationCode = await db.ActivationCodes.FindAsync(id);
+            ActivationCode activationCode = await db.ActivationCodes.FindAsync(acId);
             if (activationCode == null)
             {
-                return NotFound();
+                return Content(HttpStatusCode.NotFound, "Activation Code does not exist."); //NotFound();
             }
 
-            return Ok(activationCode);
+            User user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return Content(HttpStatusCode.NotFound, "User does not exist."); //NotFound();
+            }
+
+            var activationCodeId = activationCode.ActivationCodeId;
+            var uId = user.UserId;
+
+            Activation activation = await db.Activations.FirstOrDefaultAsync(a => a.ActivationCodeId == activationCodeId || a.UserId == uId);
+
+            if (activation == null)
+            {
+                return Content(HttpStatusCode.NotFound, "Activation does not exist."); //NotFound();
+            }
+
+            var fechaExpiracion = activation.ExpirationDate;
+            string status;
+            var today = DateTime.Now;
+            if (today <= fechaExpiracion)
+                status = "Active";
+            else
+                status = "Expired";
+            return Ok(status);
         }
 
         // PUT: api/ActivationCodes/5

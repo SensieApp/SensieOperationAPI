@@ -1,10 +1,7 @@
-namespace SensieOperationAPI
-{
-    using System;
-    using System.Data.Entity;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
+using System.Data.Entity;
 
+namespace SensieOperationAPI.Models
+{
     public partial class OperationContext : DbContext
     {
         public OperationContext()
@@ -13,6 +10,8 @@ namespace SensieOperationAPI
         }
 
         public virtual DbSet<ActivationCode> ActivationCodes { get; set; }
+        public virtual DbSet<Activation> Activations { get; set; }
+        public virtual DbSet<Duration> Durations { get; set; }
         public virtual DbSet<Module> Modules { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -27,17 +26,29 @@ namespace SensieOperationAPI
                 .IsUnicode(false);
 
             modelBuilder.Entity<ActivationCode>()
+                .HasMany(e => e.Activations)
+                .WithRequired(e => e.ActivationCode)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ActivationCode>()
                 .HasMany(e => e.Modules)
                 .WithMany(e => e.ActivationCodes)
                 .Map(m => m.ToTable("ModulesActivationCodes").MapLeftKey("ActivationCodeId").MapRightKey("ModuloId"));
 
-            modelBuilder.Entity<ActivationCode>()
-                .HasMany(e => e.Users)
-                .WithMany(e => e.ActivationCodes)
-                .Map(m => m.ToTable("UsersActivationCodes").MapLeftKey("ActivationCodeId").MapRightKey("UserId"));
+            modelBuilder.Entity<Activation>()
+                .Property(e => e.Referencias)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Duration>()
+                .Property(e => e.Name)
+                .IsUnicode(false);
 
             modelBuilder.Entity<Module>()
-                .Property(e => e.Nombre)
+                .Property(e => e.ModuloKey)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Module>()
+                .Property(e => e.Name)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Module>()
@@ -55,6 +66,11 @@ namespace SensieOperationAPI
             modelBuilder.Entity<User>()
                 .Property(e => e.Comments)
                 .IsUnicode(false);
+
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.Activations)
+                .WithRequired(e => e.User)
+                .WillCascadeOnDelete(false);
         }
     }
 }

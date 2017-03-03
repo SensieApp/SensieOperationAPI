@@ -1,11 +1,8 @@
-namespace SensieOperationAPI
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
+namespace SensieOperationAPI.Models
+{
     public partial class Module
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -19,7 +16,11 @@ namespace SensieOperationAPI
 
         [Required]
         [StringLength(50)]
-        public string Nombre { get; set; }
+        public string ModuloKey { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string Name { get; set; }
 
         [Required]
         [StringLength(10)]
