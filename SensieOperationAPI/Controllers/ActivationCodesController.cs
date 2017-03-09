@@ -22,7 +22,7 @@ namespace SensieOperationAPI.Controllers
 
         // GET: api/ActivationCodes/5
         [ResponseType(typeof(ActivationCode))]
-        public async Task<IHttpActionResult> GetActivationCode(string userName, string acId, string email)
+        public async Task<IHttpActionResult> GetActivationCode(string name, string acId, string email)
         {
             ActivationCode activationCode = await db.ActivationCodes.FirstOrDefaultAsync(a => a.Code == acId); //.FindAsync(acId);
             if (activationCode == null)
@@ -30,7 +30,7 @@ namespace SensieOperationAPI.Controllers
                 return Content(HttpStatusCode.NotFound, "Activation Code does not exist."); //NotFound();
             }
 
-            User user = await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Name.Trim() == userName.Trim());
+            User user = await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Name.Trim() == name.Trim());
             if (user == null)
             {
                 return Content(HttpStatusCode.NotFound, "User does not exist."); //NotFound();
